@@ -5,44 +5,43 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.example.hypekicks_kurek_radomski.databinding.ItemSneakerBinding
 
-class SneakerAdapter(private val context: Context, private var sneakerList: List<Sneaker>) : BaseAdapter() {
-
-    override fun getCount(): Int = sneakerList.size
-
-    override fun getItem(position: Int): Any = sneakerList[position]
-
-    override fun getItemId(position: Int): Long = position.toLong()
+class SneakerAdapter(private val context: Context, private var list: List<Sneaker>) : BaseAdapter() {
+    override fun getCount() = list.size
+    override fun getItem(position: Int) = list[position]
+    override fun getItemId(position: Int) = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val binding: ItemSneakerBinding
         val view: View
-
         if (convertView == null) {
-            binding = ItemSneakerBinding.inflate(LayoutInflater.from(context), parent, false)
-            view = binding.root
-            view.tag = binding
+            view = LayoutInflater.from(context).inflate(R.layout.item_sneaker, parent, false)
         } else {
-            binding = convertView.tag as ItemSneakerBinding
             view = convertView
         }
+        
+        val sneaker = list[position]
+        
+        val img = view.findViewById<ImageView>(R.id.imgSneaker)
+        val brand = view.findViewById<TextView>(R.id.txtBrand)
+        val model = view.findViewById<TextView>(R.id.txtModel)
 
-        val sneaker = sneakerList[position]
-
-        binding.txtBrand.text = sneaker.brand
-        binding.txtModel.text = sneaker.modelName
+        brand.text = sneaker.brand
+        model.text = sneaker.modelName
 
         Glide.with(context)
             .load(sneaker.imageUrl)
-            .into(binding.imgSneaker)
+            .placeholder(android.R.drawable.ic_menu_report_image) // Ikona podczas ładowania
+            .error(android.R.drawable.ic_delete)               // Czerwony X jeśli link jest zły
+            .into(img)
 
         return view
     }
 
     fun updateList(newList: List<Sneaker>) {
-        sneakerList = newList
+        this.list = newList
         notifyDataSetChanged()
     }
 }

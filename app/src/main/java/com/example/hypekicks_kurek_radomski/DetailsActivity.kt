@@ -14,21 +14,22 @@ class DetailsActivity : AppCompatActivity() {
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Odbieranie danych
+
         val sneaker = intent.getSerializableExtra("sneaker") as? Sneaker
 
         if (sneaker != null) {
+
             binding.txtDetailsBrand.text = sneaker.brand
             binding.txtDetailsModel.text = sneaker.modelName
-            // Sformatowana cena
             binding.txtDetailsPrice.text = String.format("%.2f PLN", sneaker.resellPrice)
 
-            // Wyświetlenie zdjęcia
+
             Glide.with(this)
                 .load(sneaker.imageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_delete)
                 .into(binding.imgDetails)
         }
-
 
         binding.btnBack.setOnClickListener {
             finish()
