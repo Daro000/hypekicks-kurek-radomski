@@ -103,14 +103,29 @@ class AdminPanelActivity : AppCompatActivity() {
         // edycja
         binding.listViewSneakers.setOnItemClickListener { _, _, position, _ ->
             val selectedId = sneakerIdList[position]
-            db.collection("sneakers").document(selectedId)
-                .update("resellPrice", 999.0)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Status zmieniony!", Toast.LENGTH_SHORT).show()
+
+            val input = android.widget.EditText(this).apply {
+                hint = "Nowa cena (PLN)"
+                inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                        android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+                setPadding(48, 24, 48, 24)
+            }
+
+            android.app.AlertDialog.Builder(this)
+                .setTitle("Edytuj cenę resell")
+                .setView(input)
+                .setPositiveButton("ZAKTUALIZUJ") { _, _ ->
+                    val newPrice = input.text.toString().trim().toDoubleOrNull()
+                    if (newPrice != null) {
+                        db.collection("sneakers").document(selectedId)
+                            .update("resellPrice", newPrice)
+                            .addOnSuccessListener {
+                                android.widget.Toast.makeText(this, "Cena zaktualizowana!", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                    }
                 }
-                .addOnFailureListener { e ->
-                    Log.e("HypeKicks", "Błąd aktualizacji", e)
-                }
+                .setNegativeButton("ANULUJ", null)
+                .show()
         }
 
         // usuniecie
